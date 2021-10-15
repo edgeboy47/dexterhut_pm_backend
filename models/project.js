@@ -9,8 +9,8 @@ const projectSchema = mongoose.Schema(
     description: String,
     photoURL: String,
     projectURL: String,
-    tasks: [String],
-    members: [String],
+    tasks: [mongoose.Schema.Types.ObjectId],
+    members: [mongoose.Schema.Types.ObjectId],
   },
   {
     timestamps: true,

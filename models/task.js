@@ -8,7 +8,7 @@ const taskSchema = new mongoose.Schema(
     },
     dueDate: Date,
     description: String,
-    usersAssigned: [String],
+    usersAssigned: [mongoose.Schema.Types.ObjectId],
   },
   {
     timestamps: true,

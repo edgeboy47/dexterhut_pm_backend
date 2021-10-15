@@ -13,11 +13,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  tasksList: {
-    type: [String],
-    default: [],
-  },
-  projectsList: [String],
+  tasksList: [mongoose.Schema.Types.ObjectId],
+  projectsList: [mongoose.Schema.Types.ObjectId],
 });
 
 const User = mongoose.model("User", userSchema);
