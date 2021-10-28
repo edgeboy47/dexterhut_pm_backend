@@ -1,6 +1,6 @@
 const express = require("express");
 const models = require("../models/models");
-const projectController = require('../controllers/projectController');
+const projectController = require("../controllers/projectController");
 const router = express.Router();
 
 // Read all user's projects
@@ -48,5 +48,8 @@ router.put("/projects/:id", projectController.updateProject);
 
 // Delete Project by id
 router.delete("/projects/:id", projectController.deleteProject);
+
+// Add task reference to project document
+router.post("/projects/:id/tasks/:taskID", projectController.addTaskToProject);
 
 module.exports = router;

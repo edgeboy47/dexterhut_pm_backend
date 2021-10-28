@@ -41,7 +41,17 @@ exports.getTasksForProject = async (req, res) => {
 
 exports.createTask = async (req, res) => {
   try {
+    // TODO: Get user id to add task reference, possibly from http headers
+    const projectID = req.params.id;
     const task = await models.Task.create(req.body);
+    const project = await models.Project.findById(projectID);
+    const taskID = task._id;
+
+    if (project.tasks.includes(taskID) === false) {
+      project.tasks.push(taskID);
+      project.save();
+    }
+
     res.status(201).set("Location", `${task.id}`).end();
   } catch (e) {
     console.log(`Error creating task: ${e}`);
@@ -51,25 +61,66 @@ exports.createTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const id = req.params.id;
+    const projectID = req.params.id;
+    const taskID = req.params.taskID;
     const updatedTask = req.body;
 
-    await models.Task.findByIdAndUpdate(id, updatedTask);
-    res.status(204).send();
+    const project = await models.Project.findById(projectID);
+
+    if (project.tasks.includes(taskID) === true) {
+      await models.Task.findByIdAndUpdate(taskID, updatedTask);
+      res.status(204).end();
+    }
+    res.status(404).end();
   } catch (e) {
     console.log(`Error updating task: ${e}`);
-    res.status(404).send();
+    res.status(404).end();
   }
 };
 
 exports.deleteTask = async (req, res) => {
   try {
-    const id = req.params.id;
+    // TODO: Delete references from project and any users when task is deleted
+    const projectID = req.params.id;
+    const taskID = req.params.taskID;
+    const project = await models.Project.findById(projectID);
 
-    await models.Task.findByIdAndDelete(id);
-    res.status(204).end();
+    if (project.tasks.includes(taskID)) {
+      const task = await models.Task.findById(taskID);
+      const userIDs = task.usersAssigned;
+      userIDs.forEach((userID) => {
+        // TODO: Delete task id from user tasks list
+      });
+
+      const filteredTasks = project.tasks.filter((el) => el.equals(taskID) === false);
+
+      project.set("tasks", filteredTasks);
+      project.save();
+      await models.Task.findByIdAndDelete(taskID);
+
+      res.status(204).end();
+    }
+    res.status(404).end();
   } catch (e) {
     console.log(`Error deleting task: ${e}`);
     res.status(404).end();
+  }
+};
+
+exports.addUserToTask = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const task = await models.Task.findById(id);
+
+    if (task.usersAssigned.includes(req.params.userID) === false) {
+      task.usersAssigned.push(req.params.userID);
+      task.save();
+      res.status(200).end();
+    }
+    res.status(204).end();
+  } catch (e) {
+    console.log(`Error adding user to task: ${e}`);
+    res.status(404).send();
   }
 };

@@ -9,7 +9,7 @@ const projectSchema = mongoose.Schema(
     description: String,
     photoURL: String,
     projectURL: String,
-    tasks: [mongoose.Schema.Types.ObjectId],
+    tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
     members: [mongoose.Schema.Types.ObjectId],
   },
   {

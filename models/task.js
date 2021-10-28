@@ -8,6 +8,8 @@ const taskSchema = new mongoose.Schema(
     },
     dueDate: Date,
     description: String,
+    isInProgress: Boolean,
+    isCompleted: Boolean,
     usersAssigned: [mongoose.Schema.Types.ObjectId],
   },
   {

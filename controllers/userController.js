@@ -32,6 +32,7 @@ exports.createUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
+    // TODO: Delete references when user is deleted
     const id = req.params.id;
 
     await models.User.findByIdAndDelete(id);

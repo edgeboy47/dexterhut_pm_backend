@@ -10,7 +10,14 @@ router.get("/users/:id/tasks", taskController.getTasksForUser);
 router.get("/projects/:id/tasks", taskController.getTasksForProject);
 
 // Create task
-router.post("/tasks", taskController.createTask);
+// router.post("/tasks", taskController.createTask);
+
+// TODO: Create routes for tasks in project, "/projects/:id/tasks"
+router.post("/projects/:id/tasks", taskController.createTask);
+
+router.put("/projects/:id/tasks/:taskID", taskController.updateTask);
+
+router.delete("/projects/:id/tasks/:taskID", taskController.deleteTask);
 
 // TODO: Combine these functions
 // Add task reference to user doc
@@ -42,9 +49,12 @@ router.put("/projects/:id/tasks/:taskID", async (req, res) => {
 });
 
 // Update task by id
-router.put("/tasks/:id", taskController.updateTask);
+// router.put("/tasks/:id", taskController.updateTask);
 
 // Delete task by id
 router.delete("/tasks/:id", taskController.deleteTask);
+
+// Add user to task
+router.post("/tasks/:id/users/:userID", taskController.addUserToTask);
 
 module.exports = router;
