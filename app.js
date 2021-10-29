@@ -23,7 +23,6 @@ mongoose
 
 // TODO: Setup basic user auth and account creation
 // TODO: Enable compression of responses
-// TODO: Add router and move logic into controllers
 
 // User Routes
 app.use(userRoutes);

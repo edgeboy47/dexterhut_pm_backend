@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const models = require("../models/models");
 
 exports.getTasksForUser = async (req, res) => {
@@ -43,15 +44,15 @@ exports.createTask = async (req, res) => {
   try {
     // TODO: Get user id to add task reference, possibly from http headers
     const projectID = req.params.id;
-    const task = await models.Task.create(req.body);
+    const task = await new models.Task(req.body);
     const project = await models.Project.findById(projectID);
-    const taskID = task._id;
+    const newId = new mongoose.Types.ObjectId();
+    // Generates taskID here instead of client side
+    await task.set("_id", newId);
 
-    if (project.tasks.includes(taskID) === false) {
-      project.tasks.push(taskID);
-      project.save();
-    }
-
+    await task.save();
+    await project.tasks.push(task.id);
+    await project.save();
     res.status(201).set("Location", `${task.id}`).end();
   } catch (e) {
     console.log(`Error creating task: ${e}`);
@@ -92,7 +93,9 @@ exports.deleteTask = async (req, res) => {
         // TODO: Delete task id from user tasks list
       });
 
-      const filteredTasks = project.tasks.filter((el) => el.equals(taskID) === false);
+      const filteredTasks = project.tasks.filter(
+        (el) => el.equals(taskID) === false
+      );
 
       project.set("tasks", filteredTasks);
       project.save();
