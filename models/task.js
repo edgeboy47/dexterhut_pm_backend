@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const taskCommentSchema = require("./taskComment");
 
 const taskSchema = new mongoose.Schema(
   {
@@ -11,6 +12,7 @@ const taskSchema = new mongoose.Schema(
     isInProgress: Boolean,
     isCompleted: Boolean,
     usersAssigned: [mongoose.Schema.Types.ObjectId],
+    comments: [taskCommentSchema],
   },
   {
     timestamps: true,

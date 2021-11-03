@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const projectRoutes = require("./routes/projectRoutes");
+const taskCommentRoutes = require("./routes/taskCommentRoutes");
 
 require("dotenv").config();
 
@@ -32,3 +33,6 @@ app.use(taskRoutes);
 
 // Project Routes
 app.use(projectRoutes);
+
+// TaskComment Routes
+app.use(taskCommentRoutes);

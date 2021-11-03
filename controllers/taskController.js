@@ -23,6 +23,7 @@ exports.getTasksForUser = async (req, res) => {
 
 exports.getTasksForProject = async (req, res) => {
   try {
+    // TODO: Check if task is in project first
     const project = await models.Project.findById(req.params.id);
 
     const tasksList = project.tasks;
@@ -87,11 +88,11 @@ exports.deleteTask = async (req, res) => {
     const project = await models.Project.findById(projectID);
 
     if (project.tasks.includes(taskID)) {
-      const task = await models.Task.findById(taskID);
-      const userIDs = task.usersAssigned;
-      userIDs.forEach((userID) => {
-        // TODO: Delete task id from user tasks list
-      });
+      // const task = await models.Task.findById(taskID);
+      // const userIDs = task.usersAssigned;
+      // userIDs.forEach((userID) => {
+      //   // TODO: Delete task id from user tasks list
+      // });
 
       const filteredTasks = project.tasks.filter(
         (el) => el.equals(taskID) === false
