@@ -4,6 +4,7 @@ const userRoutes = require("./routes/userRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const taskCommentRoutes = require("./routes/taskCommentRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 require("dotenv").config();
 
@@ -14,7 +15,9 @@ app.use(express.json());
 
 // Running server
 app.listen(process.env.PORT, () =>
-  console.log(`Express server running on port ${process.env.PORT}`)
+  console.log(
+    `Express server running on port ${process.env.PORT}`
+  )
 );
 
 mongoose
@@ -36,3 +39,6 @@ app.use(projectRoutes);
 
 // TaskComment Routes
 app.use(taskCommentRoutes);
+
+// Authentication Routes
+app.use(authRoutes);
