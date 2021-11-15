@@ -12,7 +12,10 @@ exports.register = async (req, res) => {
 
   // Check if account with email already exists
   if (userExists) {
-    return res.status(409).send("Email already in use");
+    return res.status(409).json({
+      error: "invalid_request",
+      error_description: "User already exists",
+    });
   }
 
   try {
@@ -25,22 +28,23 @@ exports.register = async (req, res) => {
       password: hashedPassword,
     });
 
-    // Create JWT and send to user in response
-    const expiresIn = "14d";
-    const token = jwt.sign(
-      { sub: user._id, iat: Date.now() },
-      process.env.JWT_HASH_PRIVATE_KEY,
-      { expiresIn: expiresIn, algorithm: "RS256" }
-    );
+    // Create and send signed JWTs for access and refresh tokens
+    const accessToken = createAccessToken(user._id);
+    const refreshToken = createRefreshToken(user._id);
 
-    return res.status(201).json({
+    return res.status(201).set("Location", `${user._id}`).json({
       id: user._id,
       displayName: user.displayName,
-      token: token,
+      access_token: accessToken,
+      token_type: "Bearer",
+      refresh_token: refreshToken,
     });
   } catch (e) {
     console.log(`Error creating new user: ${e}`);
-    return res.status(500).end();
+    return res.status(500).json({
+      error: "server_error",
+      error_description: "Server Error. Please try again.",
+    });
   }
 };
 
@@ -57,27 +61,69 @@ exports.login = async (req, res) => {
 
       // Verify given password matches the hashed password in db
       if (await bcrypt.compare(password, savedPassword)) {
-        const expiresIn = "14d";
-        // Create new jwt and send in response body
-        const token = jwt.sign(
-          { sub: currentUser._id, iat: Date.now() },
-          process.env.JWT_HASH_PRIVATE_KEY,
-          { expiresIn: expiresIn, algorithm: "RS256" }
-        );
+        // Create and send signed JWTs for access and refresh tokens
+        const accessToken = createAccessToken(currentUser._id);
+        const refreshToken = createRefreshToken(currentUser._id);
 
         return res.status(200).json({
           id: currentUser._id,
           displayName: currentUser.displayName,
-          token: token,
+          access_token: accessToken,
+          token_type: "Bearer",
+          refresh_token: refreshToken,
         });
       } else {
-        return res.status(401).send("Incorrect password");
+        // Incorrect password
+        return res.status(401).json({
+          error: "invalid_client",
+          error_description: "Incorrect Password",
+        });
       }
     } else {
-      return res.status(401).send("User does not exist");
+      // User does not exist
+      return res.status(401).json({
+        error: "invalid_client",
+        error_description: "User does not exist",
+      });
     }
   } catch (e) {
+    // Error with server
     console.log(`Error logging in user: ${e}`);
-    return res.status(401).end();
+    return res.status(500).json({
+      error: "server_error",
+      error_description: "Server Error while logging in",
+    });
   }
 };
+
+// TODO revoke user's access token somehow
+exports.logout = async (req, res) => {};
+
+// TODO: add function for access token refresh
+exports.accessTokenRefresh = async (req, res) => {};
+
+const createAccessToken = (userID) =>
+  jwt.sign(
+    {
+      sub: userID,
+      iat: Date.now(),
+    },
+    process.env.JWT_HASH_PRIVATE_KEY,
+    {
+      expiresIn: "1d",
+      algorithm: "RS256",
+    }
+  );
+
+const createRefreshToken = (userID) =>
+  jwt.sign(
+    {
+      sub: userID,
+      iat: Date.now(),
+    },
+    process.env.JWT_HASH_PRIVATE_KEY,
+    {
+      expiresIn: "14d",
+      algorithm: "RS256",
+    }
+  );
