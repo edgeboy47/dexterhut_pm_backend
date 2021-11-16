@@ -1,7 +1,10 @@
 const express = require("express");
 const models = require("../models/models");
 const taskController = require("../controllers/taskController");
+// const passport = require("passport");
 const router = express.Router();
+
+// router.use(passport.authenticate("jwt"));
 
 // Get all tasks for user
 router.get("/users/:id/tasks", taskController.getTasksForUser);
