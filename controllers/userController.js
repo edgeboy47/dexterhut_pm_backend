@@ -12,7 +12,10 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-    const user = await models.User.findById(req.params.id);
+    const user = await models.User.findById(req.params.id).populate({
+      path: "roles",
+      populate: { path: "permissions" },
+    });
     res.status(200).json(user);
   } catch (e) {
     console.log(`Error reading user: ${e}`);

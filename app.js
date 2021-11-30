@@ -19,6 +19,8 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // Passport setup
+// TODO Setup custom error messages for auth failure
+// TODO move to another file
 passport.use(
   new JWTStrategy(
     {
@@ -41,8 +43,8 @@ passport.use(
   )
 );
 
-// Authorization middleware
-app.use("/projects", passport.authenticate("jwt", { session: false }));
+// TODO Authorization middleware, uncomment to implement
+// app.use("/projects", passport.authenticate("jwt", { session: false }));
 app.use("/users", passport.authenticate("jwt", { session: false }));
 
 
